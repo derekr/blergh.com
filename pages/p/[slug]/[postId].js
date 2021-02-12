@@ -1,73 +1,73 @@
 import ErrorPage from 'next/error'
 import { useRouter } from 'next/router'
-import { groq } from 'next-sanity'
+
+import { postQuery, postSlugsQuery } from '../../../lib/queries'
 import {
-  getClient,
   usePreviewSubscription,
-  urlFor,
+  urlForImage,
   PortableText,
 } from '../../../lib/sanity'
-
-const postQuery = groq`
-  *[_type == "post" && _id == $postId][0] {
-    _id,
-    title,
-    body,
-    mainImage,
-    categories[]->{
-      _id,
-      title
-    },
-    "slug": slug.current
-  }
-`
+import { getClient } from '../../../lib/sanity.server'
 
 export default function Post({ data, preview }) {
   const router = useRouter()
-  if (!router.isFallback && !data.post?.slug) {
+
+  const {
+    data: { post },
+  } = usePreviewSubscription(postQuery, {
+    params: { postId: `${data?.post?._id}` },
+    initialData: data,
+    enabled: preview && data,
+  })
+
+  if (!router.isFallback && !post._id) {
     return <ErrorPage statusCode={404} />
   }
 
-  console.log(data)
-
-  const { data: { post } } = usePreviewSubscription(postQuery, {
-    params: { postId: data?.post?._id },
-    initialData: data,
-    enabled: preview,
-  })
-
-  console.log(post)
-
   const { title, mainImage, body } = post
   return (
-    <article>
-      <h2>{title}</h2>
-      <figure>
-        <img src={urlFor(mainImage).url()} />
-      </figure>
-      <PortableText
-        blocks={body}
-        serializers={{
-          types: {
-            code: (props) => (
-              <pre data-language={props.node.language}>
-                <code>{props.node.code}</code>
-              </pre>
-            ),
-          },
-        }}
-      />
-      <aside></aside>
-    </article>
+    <>
+      {preview && (
+        <div>
+          This page is a preview.{' '}
+          <a
+            href="/api/exit-preview"
+            className="underline hover:text-cyan duration-200 transition-colors"
+          >
+            Click here
+          </a>{' '}
+          to exit preview mode.
+        </div>
+      )}
+      <article>
+        <h2>{title}</h2>
+        <figure>
+          <img src={urlForImage(mainImage).url()} />
+        </figure>
+        <PortableText
+          blocks={body}
+          serializers={{
+            types: {
+              code: (props) => (
+                <pre data-language={props.node.language}>
+                  <code>{props.node.code}</code>
+                </pre>
+              ),
+            },
+          }}
+        />
+        <aside></aside>
+      </article>
+    </>
   )
 }
 
 export async function getStaticProps({ params, preview = false }) {
-  const post = await getClient(true).fetch(postQuery, {
-    postId: params.postId,
+  const data = await getClient(true).fetch(postQuery, {
+    postId: `${preview ? 'drafts.' : ''}${params.postId}`,
   })
 
-  if (!post) {
+  if (!data.post) {
     return {
       notFound: true,
     }
@@ -76,15 +76,13 @@ export async function getStaticProps({ params, preview = false }) {
   return {
     props: {
       preview,
-      data: { post },
+      data,
     },
   }
 }
 
 export async function getStaticPaths() {
-  const paths = await getClient().fetch(
-    groq`*[_type == "post" && defined(slug.current)]{ 'slug': slug.current, 'postId': _id }`
-  )
+  const paths = await getClient().fetch(postSlugsQuery)
 
   return {
     paths: paths.map(({ slug, postId }) => ({ params: { slug, postId } })),
