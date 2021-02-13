@@ -39,7 +39,7 @@ export default function Post({ data, preview }) {
           to exit preview mode.
         </div>
       )}
-      <article>
+      <article className="prose lg:prose-xl">
         <h2>{title}</h2>
         <figure>
           <img src={urlForImage(mainImage).url()} />
