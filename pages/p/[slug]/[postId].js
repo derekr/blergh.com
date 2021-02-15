@@ -10,6 +10,8 @@ import {
 import { getClient } from '../../../lib/sanity.server'
 
 export default function Post({ data, preview }) {
+  if (!data) return null
+
   const router = useRouter()
 
   const {
@@ -63,11 +65,11 @@ export default function Post({ data, preview }) {
 }
 
 export async function getStaticProps({ params, preview = false }) {
-  const data = await getClient(true).fetch(postQuery, {
+  const data = await getClient(preview).fetch(postQuery, {
     postId: `${preview ? 'drafts.' : ''}${params.postId}`,
   })
 
-  if (!data.post) {
+  if (!data?.post) {
     return {
       notFound: true,
     }
