@@ -5,7 +5,7 @@ import { getClient } from '../lib/sanity.server'
 
 export default function Home({ data }) {
   return (
-    <div>
+    <div className="prose mx-auto lg:mt-14">
       <ol>
         {data.postsByLastUpdate.map((post) => {
           return (
