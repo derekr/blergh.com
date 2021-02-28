@@ -1,25 +1,41 @@
 import ErrorPage from 'next/error'
 import { useRouter } from 'next/router'
+import { createDataHook } from 'next-data-hooks'
 
-import { postQuery, postSlugsQuery } from '../../../lib/queries'
-import {
-  usePreviewSubscription,
-  urlForImage,
-  PortableText,
-} from '../../../lib/sanity'
-import { getClient } from '../../../lib/sanity.server'
+import { postQuery } from 'lib/queries'
+import { urlForImage, PortableText, usePreviewSubscription } from 'lib/sanity'
+import { getClient } from 'lib/sanity.server'
 
-export default function Post({ data, preview }) {
-  if (!data) return null
+const usePostData = createDataHook(
+  'Post',
+  async ({ params, preview = false }) => {
+    const data = await getClient(preview).fetch(postQuery, {
+      postId: `${preview ? 'drafts.' : ''}${params.postId}`,
+    })
 
+    if (!data?.post) {
+      return {
+        notFound: true,
+      }
+    }
+
+    return {
+      post: data.post,
+      preview,
+    }
+  }
+)
+
+export default function Post() {
   const router = useRouter()
+  const { post: initialPost, preview } = usePostData()
 
   const {
     data: { post },
   } = usePreviewSubscription(postQuery, {
-    params: { postId: `${data?.post?._id}` },
-    initialData: data,
-    enabled: preview && data,
+    params: { postId: `${initialPost?._id}` },
+    initialData: { post: initialPost },
+    enabled: preview && initialPost,
   })
 
   if (!router.isFallback && !post._id) {
@@ -27,6 +43,7 @@ export default function Post({ data, preview }) {
   }
 
   const { title, mainImage, body } = post
+
   return (
     <>
       {preview && (
@@ -64,30 +81,4 @@ export default function Post({ data, preview }) {
   )
 }
 
-export async function getStaticProps({ params, preview = false }) {
-  const data = await getClient(preview).fetch(postQuery, {
-    postId: `${preview ? 'drafts.' : ''}${params.postId}`,
-  })
-
-  if (!data?.post) {
-    return {
-      notFound: true,
-    }
-  }
-
-  return {
-    props: {
-      preview,
-      data,
-    },
-  }
-}
-
-export async function getStaticPaths() {
-  const paths = await getClient().fetch(postSlugsQuery)
-
-  return {
-    paths: paths.map(({ slug, postId }) => ({ params: { slug, postId } })),
-    fallback: true,
-  }
-}
+Post.dataHooks = [usePostData]

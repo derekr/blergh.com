@@ -11,10 +11,21 @@
     "@tailwindcss/typography": "^0.4.0",
     "autoprefixer": "^10.2.4",
     "next": "10.0.6",
+    "next-data-hooks": "^0.5.0",
     "next-sanity": "^0.1.8",
     "postcss": "^8.2.6",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "tailwindcss": "^2.0.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.13.1",
+    "@babel/preset-env": "^7.13.5",
+    "@babel/preset-react": "^7.12.13",
+    "@babel/preset-typescript": "^7.13.0",
+    "@types/node": "^14.14.31",
+    "prettier": "^2.2.1",
+    "sanity-codegen": "^0.9.1",
+    "typescript": "^4.2.2"
   }
 }
