@@ -11,6 +11,10 @@ export default function Home({ data }) {
           return (
             <li key={post._id}>
               <Link href={`/p/${post.slug}/${post._id}`}>{post.title}</Link>
+              <div>
+                Last updated:{' '}
+                {new Intl.DateTimeFormat().format(new Date(post._updatedAt))}
+              </div>
             </li>
           )
         })}
