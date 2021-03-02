@@ -1,5 +1,4 @@
-import { postByIdQuery } from '../../lib/queries'
-import { previewClient } from '../../lib/sanity.server'
+import client from 'lib/sanity-client'
 
 export default async function preview(req, res) {
   // Check the secret and next parameters
@@ -12,9 +11,8 @@ export default async function preview(req, res) {
   }
 
   // Check if the post with the given `postId` exists
-  const post = await previewClient.fetch(postByIdQuery, {
-    postId: req.query.postId,
-  })
+  client.setPreviewMode(true)
+  const post = await client.get('post', req.query.postId)
 
   // If the post doesn't exist prevent preview mode from being enabled
   if (!post) {

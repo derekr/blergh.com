@@ -2,14 +2,16 @@ import { GetStaticProps, GetStaticPaths } from 'next'
 import { getDataHooksProps } from 'next-data-hooks'
 
 import Post from 'routes/p/components/post'
-import { postSlugsQuery } from 'lib/queries'
-import { getClient } from 'lib/sanity.server'
+import client from 'lib/sanity-client'
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = await getClient().fetch(postSlugsQuery)
+  client.setPreviewMode(false)
+  const posts = await client.getAll('post')
 
   return {
-    paths: paths.map(({ slug, postId }) => ({ params: { slug, postId } })),
+    paths: posts.map(({ slug, _id }) => ({
+      params: { slug: slug.current, postId: _id },
+    })),
     fallback: true,
   }
 }
