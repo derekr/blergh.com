@@ -4,23 +4,22 @@ import { createDataHook } from 'next-data-hooks'
 
 import { postQuery } from 'lib/queries'
 import { urlForImage, PortableText, usePreviewSubscription } from 'lib/sanity'
-import { getClient } from 'lib/sanity.server'
+
+import client from 'lib/sanity-client'
 
 const usePostData = createDataHook(
   'Post',
   async ({ params, preview = false }) => {
-    const data = await getClient(preview).fetch(postQuery, {
-      postId: `${preview ? 'drafts.' : ''}${params.postId}`,
-    })
+    const post = await client.get('post', params.postId as string)
 
-    if (!data?.post) {
+    if (!post) {
       return {
         notFound: true,
       }
     }
 
     return {
-      post: data.post,
+      post: post,
       preview,
     }
   }
@@ -35,7 +34,7 @@ export default function Post() {
   } = usePreviewSubscription(postQuery, {
     params: { postId: `${initialPost?._id}` },
     initialData: { post: initialPost },
-    enabled: preview && initialPost,
+    enabled: preview && Boolean(initialPost),
   })
 
   if (!router.isFallback && !post._id) {

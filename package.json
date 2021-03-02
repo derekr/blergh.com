@@ -4,23 +4,25 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "debug": "NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
     "start": "next start"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.4.0",
     "autoprefixer": "^10.2.4",
-    "next": "10.0.6",
+    "isomorphic-fetch": "^3.0.0",
+    "next": "10.0.7",
     "next-data-hooks": "^0.5.0",
-    "next-sanity": "^0.1.8",
+    "next-sanity": "^0.1.10",
     "postcss": "^8.2.6",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "tailwindcss": "^2.0.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.13.1",
-    "@babel/preset-env": "^7.13.5",
+    "@babel/core": "^7.13.8",
+    "@babel/preset-env": "^7.13.8",
     "@babel/preset-react": "^7.12.13",
     "@babel/preset-typescript": "^7.13.0",
     "@types/node": "^14.14.31",
