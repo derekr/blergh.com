@@ -8,7 +8,6 @@ import { Post } from 'lib/schema'
 const useHomeData = createDataHook(
     'Home',
     async () => {
-        console.log('query', postIndexByLastUpdated)
       const posts = await client.query<Post>(postIndexByLastUpdated)
 
       return {
