@@ -14,7 +14,8 @@
     "@sanity/default-login",
     "@sanity/desk-tool",
     "@sanity/production-preview",
-    "@sanity/vision"
+    "@sanity/vision",
+    "markdown"
   ],
   "env": {
     "development": {
