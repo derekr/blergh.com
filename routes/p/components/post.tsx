@@ -1,9 +1,10 @@
 import ErrorPage from 'next/error'
 import { useRouter } from 'next/router'
 import { createDataHook } from 'next-data-hooks'
+import hydrate from 'next-mdx-remote/hydrate';
 
 import { postQuery } from 'lib/queries'
-import { urlForImage, PortableText, usePreviewSubscription } from 'lib/sanity'
+import { urlForImage, usePreviewSubscription } from 'lib/sanity'
 
 import client from 'lib/sanity-client'
 
@@ -18,8 +19,16 @@ const usePostData = createDataHook(
       }
     }
 
+    const renderToString = require('next-mdx-remote/render-to-string')
+
+    const content = await renderToString(post.body, {
+      components: {
+        Test: () => <div>TEST</div>
+      }
+    })
+
     return {
-      post: post,
+      post: { ...post, body: content },
       preview,
     }
   }
@@ -43,6 +52,12 @@ export default function Post() {
 
   const { title, mainImage, body } = post
 
+  const content = hydrate(body, {
+    components: {
+      Test: () => <div>TEST</div>
+    }
+  })
+
   return (
     <>
       {preview && (
@@ -62,18 +77,7 @@ export default function Post() {
         <figure>
           <img src={urlForImage(mainImage).url()} />
         </figure>
-        <PortableText
-          blocks={body}
-          serializers={{
-            types: {
-              code: (props) => (
-                <pre data-language={props.node.language}>
-                  <code>{props.node.code}</code>
-                </pre>
-              ),
-            },
-          }}
-        />
+        { content }
         <aside></aside>
       </article>
     </>

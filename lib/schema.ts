@@ -82,11 +82,11 @@ export interface Post extends SanityDocument {
   publishedAt?: string;
 
   /**
-   * Body — `blockContent`
+   * Body — `markdown`
    *
    *
    */
-  body?: BlockContent;
+  body?: Markdown;
 }
 
 /**
@@ -165,3 +165,10 @@ export type BlockContent = Array<
 >;
 
 export type Documents = Post | Author | Category;
+
+/**
+ * This interface is a stub. It was referenced in your sanity schema but
+ * the definition was not actually found. Future versions of
+ * sanity-codegen will let you type this explicity.
+ */
+type Markdown = any;

@@ -5,7 +5,6 @@ import Post from 'routes/p/components/post'
 import client from 'lib/sanity-client'
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  client.setPreviewMode(false)
   const posts = await client.getAll('post')
 
   return {
