@@ -34,8 +34,7 @@ const usePostData = createDataHook(
   }
 )
 
-export default function Post() {
-  const router = useRouter()
+const PostDetail = () => {
   const { post: initialPost, preview } = usePostData()
 
   const {
@@ -46,7 +45,7 @@ export default function Post() {
     enabled: preview && Boolean(initialPost),
   })
 
-  if (!router.isFallback && !post._id) {
+  if (!post._id) {
     return <ErrorPage statusCode={404} />
   }
 
@@ -82,6 +81,16 @@ export default function Post() {
       </article>
     </>
   )
+}
+
+export default function Post() {
+  const router = useRouter()
+
+  if (router.isFallback) {
+    return <div>loading…</div>
+  }
+
+  return <PostDetail />
 }
 
 Post.dataHooks = [usePostData]

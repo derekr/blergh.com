@@ -21,7 +21,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     dataHooks: Post.dataHooks,
   })
 
-  return { props: dataHooksProps }
+  return { props: { ...dataHooksProps } }
 }
 
 export default Post
