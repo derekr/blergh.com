@@ -8,8 +8,8 @@ export default {
     sitemap: true, // Generate sitemap (set to "false" to disable)
   },
   devOptions: {
-    // port: 3000,         // The port to run the dev server on.
-    // tailwindConfig: '', // Path to tailwind.config.js if used, e.g. './tailwind.config.js'
+    port: 3001,         // The port to run the dev server on.
+    tailwindConfig: './tailwind.config.js', // Path to tailwind.config.js if used, e.g. './tailwind.config.js'
   },
   renderers: ['@astrojs/renderer-preact'],
 };
